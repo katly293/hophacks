@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:collection/collection.dart';
+
+const List<String> instructionOptions = <String>['N/A', 'Take with food', 'Take with water', 'Take on empty stomach'];
+typedef MenuEntry = DropdownMenuEntry<String>;
 
 void main() {
   runApp(const MyApp());
@@ -55,7 +59,101 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String dropdownValue = instructionOptions.first;
+  static final List<MenuEntry> menuEntries = UnmodifiableListView<MenuEntry>(
+    instructionOptions.map<MenuEntry>((String name) => MenuEntry(value: name, label: name)),
+  );
 
+  Widget _promptName() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Medication Name')
+    );
+  }
+
+  Widget _promptInstructions() {
+    return Row(
+      children: <Widget>[
+        const Text('Instructions:'),
+        Spacer(),
+        DropdownMenu<String>(
+          initialSelection: instructionOptions.first,
+          onSelected: (String? value) {
+            // This is called when the user selects an item.
+            setState(() {
+              dropdownValue = value!;
+            }
+            );
+          },
+          dropdownMenuEntries: menuEntries,
+        )
+      ]
+    );
+  }
+
+  Widget _promptPerDose() {
+    return TextFormField(
+      decoration: const InputDecoration(labelText: 'Recommended Dose'),
+      keyboardType: TextInputType.number
+    );
+  }
+
+  Widget _promptFrequency() {
+    bool on = true;
+
+    return Switch(
+      // This bool value toggles the switch.
+      value: on,
+      activeThumbColor: Colors.red,
+      onChanged: (bool value) {
+        // This is called when the user toggles the switch.
+        setState(() {
+          on = value;
+        });
+      },
+    );
+  }
+
+  void _addAlarm() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 500,
+          color: const Color.fromARGB(255, 255, 189, 189),
+          padding: const EdgeInsets.all(15.0),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: .center,
+              mainAxisSize: .min,
+              children: <Widget>[
+                const Text('Modal BottomSheet'),
+                ElevatedButton(
+                  child: const Text('Close BottomSheet'),
+                  onPressed: () => Navigator.pop(context),
+                ),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: <Widget>[
+                      _promptName(),
+                      const SizedBox(height: 20),
+                      _promptInstructions(),
+                      const SizedBox(height: 20),
+                      _promptPerDose(),
+                      const SizedBox(height: 20),
+                      _promptFrequency()
+                    ]
+                  )
+                )
+              ],
+            ),
+          ),
+        );
+      }
+    );
+  }
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
@@ -113,7 +211,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        onPressed: _addAlarm,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
