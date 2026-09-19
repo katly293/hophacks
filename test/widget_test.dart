@@ -1,30 +1,31 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:hophacks2026/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Medication Tracker smoke test and Add Medication sheet test',
+      (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    await tester.pumpWidget(const MedicationTrackerApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the title and adherence card are present
+    expect(find.text('Medication Tracker'), findsOneWidget);
+    expect(find.text('Today\'s Schedule'), findsOneWidget);
+    expect(find.text('All Medications'), findsOneWidget);
+    expect(find.text('Add Medication'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Tap the 'Add Medication' button to open the bottom sheet
+    await tester.tap(find.text('Add Medication'));
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the bottom sheet sections are visible
+    expect(find.text('Time of Day'), findsOneWidget);
+    expect(find.text('Morning'), findsOneWidget);
+    expect(find.text('Noon'), findsOneWidget);
+    expect(find.text('Evening'), findsOneWidget);
+    expect(find.text('Night'), findsOneWidget);
+    expect(find.text('Days of the Week'), findsOneWidget);
+    expect(find.text('Save Medication'), findsOneWidget);
   });
 }
